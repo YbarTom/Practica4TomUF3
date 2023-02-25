@@ -4,8 +4,6 @@ package practica4pruebastomsamu;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -18,8 +16,6 @@ import java.text.ParseException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-
 
 /**
  *
@@ -53,8 +49,9 @@ f) Llistat de tots els clients*/
     public static final String INDEX = "./index.txt";
     public static final String NOM_FTX_CLIENTS_IDXPOS = "./clientes.idx_pos";
     public static Scanner scan = new Scanner(System.in);
-    
-    public static final int BYTESLONG=8;
+
+    public static final int BYTESLONG = 8;
+    public static final int BYTESINT = 4;
 
     /**
      * @param args the command line arguments
@@ -62,6 +59,7 @@ f) Llistat de tots els clients*/
     public static void main(String[] args) {
         Menu();
     }
+
     /**
      * Menu amb switch que crida a les funcions respectives
      */
@@ -76,7 +74,7 @@ f) Llistat de tots els clients*/
                     LeerClientesPosicion();
                     break;
                 case 3:
-                    LeerClientesCodigoBinario();
+                    LeerClientesCodigo();
                     break;
                 case 4:
                     ModificarClientesCodigoBinario();
@@ -91,8 +89,10 @@ f) Llistat de tots els clients*/
             opcion = MostrarMenu();
         }
     }
+
     /**
      * Funcio que mostra el menu
+     *
      * @return l'opcio seleccionada
      */
     public static int MostrarMenu() {
@@ -112,8 +112,10 @@ f) Llistat de tots els clients*/
 
         return opcion;
     }
+
     /**
      * Funcio que obre el fitxer
+     *
      * @param nomFichero nom del fitxer a obrir
      * @param crear true per si no existeix crearlo o false per no crearlo
      * @return el fitxer
@@ -138,7 +140,7 @@ f) Llistat de tots els clients*/
 
         return result;
     }
-    
+
     public static DataInputStream AbrirFicheroLecturaBinario(String nomFichero, boolean crear) {
         DataInputStream dis = null;
         File f = AbrirFichero(nomFichero, crear);
@@ -176,8 +178,10 @@ f) Llistat de tots els clients*/
 
         return dos;
     }
+
     /**
      * Funcio que demana les dades del client
+     *
      * @return el client
      */
     public static Cliente PedirDatosCliente() {
@@ -214,18 +218,18 @@ f) Llistat de tots els clients*/
         DataOutputStream dos = AbrirFicheroEscrituraBinario(NOM_FTX_CLIENTS_BIN, true, true);
 
         Cliente cli = PedirDatosCliente();
-        GrabarDatosClienteBinario(dos, cli,f);
+        GrabarDatosClienteBinario(dos, cli, f);
 
         CerrarFicheroBinarioOutput(dos);
         System.out.println("Client donat d'alta correctament");
 
     }
 
-    public static void GrabarDatosClienteBinario(DataOutputStream dos, Cliente cli,File f) {
+    public static void GrabarDatosClienteBinario(DataOutputStream dos, Cliente cli, File f) {
 
         try {
-            GrabarIndiceClientePosicion(f.length());
-            
+            GrabarIndiceClientePosicion(f.length(), cli.codi);
+
             dos.writeInt(cli.codi);
             dos.writeUTF(cli.nom);
             dos.writeUTF(cli.cognoms);
@@ -240,19 +244,19 @@ f) Llistat de tots els clients*/
         }
 
     }
-    
-    public static void GrabarIndiceClientePosicion(long posicion)
-    {
-        
+
+    public static void GrabarIndiceClientePosicion(long posicion, int codi) {
+
         File f = AbrirFichero(NOM_FTX_CLIENTS_IDXPOS, true);
-        DataOutputStream  dos = AbrirFicheroEscrituraBinario( NOM_FTX_CLIENTS_IDXPOS, true,true);
-        
+        DataOutputStream dos = AbrirFicheroEscrituraBinario(NOM_FTX_CLIENTS_IDXPOS, true, true);
+
         try {
             dos.writeLong(posicion);
+            dos.writeInt(codi);
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         CerrarFicheroBinarioOutput(dos);
     }
 
@@ -261,14 +265,16 @@ f) Llistat de tots els clients*/
         DataOutputStream dos = AbrirFicheroEscrituraBinario(NOM_FTX_CLIENTS_BIN, true, true);
 
         Cliente cli = PedirDatosCliente();
-        GrabarDatosClienteBinario(dos, cli,f);
+        GrabarDatosClienteBinario(dos, cli, f);
 
         CerrarFicheroBinarioOutput(dos);
         System.out.println("Client donat d'alta correctament");
 
     }
+
     /**
      * Funcio per a tancar el fitxer amb ek data input
+     *
      * @param dis dataInputStream
      */
     public static void CerrarFicheroBinarioInput(DataInputStream dis) {
@@ -278,8 +284,10 @@ f) Llistat de tots els clients*/
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     /**
-     * Funcio per a tancar el fixter amb el data output 
+     * Funcio per a tancar el fixter amb el data output
+     *
      * @param dos DataOutputStream
      */
     public static void CerrarFicheroBinarioOutput(DataOutputStream dos) {
@@ -304,8 +312,10 @@ f) Llistat de tots els clients*/
         System.out.println("e-mail: " + client.mail);
         System.out.println("VIP: " + client.VIP);
     }
+
     /**
      * Funcio que llegeix les dades del client, ja que el client es una clase
+     *
      * @param dis DataInputStream
      * @return retorna el client
      */
@@ -328,6 +338,7 @@ f) Llistat de tots els clients*/
         }
         return cli;
     }
+
     public static Cliente LeerDatosClienteBinario(DataInputStream dis) {
         Cliente cli = new Cliente();
 
@@ -347,11 +358,12 @@ f) Llistat de tots els clients*/
         }
         return cli;
     }
+
     /**
      * Funcio que llegeix tots els clients de l'arxiu binari
      */
     public static void LeerClientesBinario() {
-        File f = AbrirFichero(NOM_FTX_CLIENTS_BIN,true);
+        File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
 
         Cliente cli = LeerDatosClienteBinario(dis);
@@ -362,41 +374,86 @@ f) Llistat de tots els clients*/
 
         CerrarFicheroBinarioInput(dis);
     }
+
     /**
-     * Funcio que va llegint els clients, i imprimeix el client de la posicio demanada.
-     * Utilitzo un contador per anar contant els clients llegits, una vegada que el contador
-     * es igual al numero demanat, imprimeixo per pantalla
+     * Funcio que va llegint els clients, i imprimeix el client de la posicio
+     * demanada. Utilitzo un contador per anar contant els clients llegits, una
+     * vegada que el contador es igual al numero demanat, imprimeixo per
+     * pantalla
      */
     public static void LeerClientesPosicion() {
-        try{
+        try {
             System.out.print("Introdueix el numero de registre al que vols accedir: ");
-            int registre=scan.nextInt();
-            
+            int registre = scan.nextInt();
+
             //per calcular la posicio on esta el registre al fitxer index, es fa la formula
             //(numeroregistre-1)*tamanydebytesqueocupaelregistre 
-            long posicio_index = (registre-1)* BYTESLONG;
-            
-            RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS,"r");
+            long posicio_index = (registre - 1) * (BYTESLONG + BYTESINT);
+
+            RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
             raf.seek(posicio_index);
-            
-            long posicio_dades=raf.readLong();
+
+            long posicio_dades = raf.readLong();
             raf.close();
-            
-            RandomAccessFile rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "r"); 
+
+            RandomAccessFile rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "r");
             rafClient.seek(posicio_dades);
-            
-            Cliente cli = LeerDatosClienteBinario(rafClient); 
+
+            Cliente cli = LeerDatosClienteBinario(rafClient);
             EscribirDatosCliente(cli);
             rafClient.close();
-        }catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
+
+    public static void LeerClientesCodigo() {
+        try {
+            Cliente cli = null;
+            int contador=1;
+            System.out.print("Introdueix el codi del client al que vols accedir: ");
+            int codi = scan.nextInt();
+            do {
+                
+                
+
+                //per calcular la posicio on esta el registre al fitxer index, es fa la formula
+                //(numeroregistre-1)*tamanydebytesqueocupaelregistre 
+                long posicio_index = (contador - 1) * (BYTESLONG + BYTESINT);
+
+                RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
+                raf.seek(posicio_index);
+
+                long posicio_dades = raf.readLong();
+                raf.close();
+
+                RandomAccessFile rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "r");
+                rafClient.seek(posicio_dades);
+
+                cli = LeerDatosClienteBinario(rafClient);
+                
+                if(cli.codi==codi){
+                    EscribirDatosCliente(cli);
+                }
+                
+                rafClient.close();
+                contador++;
+            } while (cli.codi != codi);
+
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     /**
-     * Funcio que va llegeix els clients, 
+     * Funcio que va llegeix els clients,
      */
     public static void LeerClientesCodigoBinario() {
         System.out.print("Introdueix el codi del client a buscar: ");
@@ -416,8 +473,10 @@ f) Llistat de tots els clients*/
 
         CerrarFicheroBinarioInput(dis);
     }
+
     /**
-     * Funcio que demana el codi del client a modificar, el borra i et demana les dades
+     * Funcio que demana el codi del client a modificar, el borra i et demana
+     * les dades
      */
     public static void ModificarClientesCodigoBinario() {
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
@@ -437,7 +496,7 @@ f) Llistat de tots els clients*/
                 GrabarClientesModificarBinario();
             }
             if (cli.codi != codigoModificar) {
-                GrabarDatosClienteBinario(dos, cli,f);//Escribe en el nuevo fichero
+                GrabarDatosClienteBinario(dos, cli, f);//Escribe en el nuevo fichero
 
             }
 
@@ -451,6 +510,7 @@ f) Llistat de tots els clients*/
         BorrarFichero(NOM_FTX_CLIENTS_BIN);
         RenombrarFichero(COPIA, NOM_FTX_CLIENTS_BIN);
     }
+
     /**
      * Funcio que borra el client, la funcio busca el client per el seu codi.
      */
@@ -469,7 +529,7 @@ f) Llistat de tots els clients*/
         while (cli != null) {
 
             if (cli.codi != codigoBorrar) {//Si el codigo a borrar es diferente
-                GrabarDatosClienteBinario(dos, cli,f);//Lo escribe en el nuevo fichero  
+                GrabarDatosClienteBinario(dos, cli, f);//Lo escribe en el nuevo fichero  
             }
             cli = LeerDatosClienteBinario(dis);//Lee lo que hay en el antiguo fichero
         }
@@ -481,16 +541,20 @@ f) Llistat de tots els clients*/
         BorrarFichero(NOM_FTX_CLIENTS_BIN);
         RenombrarFichero(COPIA, NOM_FTX_CLIENTS_BIN);
     }
+
     /**
      * Funcio per a borrar el fitxer
+     *
      * @param filename nom del fitxer
      */
     public static void BorrarFichero(String filename) {
         File f = new File(filename);
         f.delete();
     }
+
     /**
      * Funcio per reanomenar el fitxer
+     *
      * @param filename_origen primer nom
      * @param filename_final nom a cambiar
      */

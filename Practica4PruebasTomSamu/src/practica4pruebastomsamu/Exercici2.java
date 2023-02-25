@@ -376,7 +376,7 @@ f) Llistat de tots els clients*/
             //(numeroregistre-1)*tamanydebytesqueocupaelregistre 
             long posicio_index = (registre-1)* BYTESLONG;
             
-            RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_BIN,"r");
+            RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS,"r");
             raf.seek(posicio_index);
             
             long posicio_dades=raf.readLong();

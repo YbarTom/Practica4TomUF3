@@ -529,7 +529,9 @@ f) Llistat de tots els clients*/
         }
 
     }
-
+    /**
+     * Funcio que imprimeix el client que indiques, el busca de forma directa amb el fitxer index
+     */
     public static void LeerClientesCodigoRaf() {
 
         System.out.print("Introdueix el codi del client al que vols accedir: ");
@@ -612,7 +614,9 @@ f) Llistat de tots els clients*/
         MarcarBorrado(codigoBorrar);
 
     }
-
+    /**
+     * Funcio que marca amb true el i.esborrat si es vol borrar
+    */
     public static void MarcarBorrado(int codigoBorrar) {
         try {
             RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");

@@ -37,7 +37,7 @@ class Cliente {
 class Index {
 
     long posicio;
-    int codi;    
+    int codi;
     boolean esborrat;
 }
 
@@ -81,13 +81,13 @@ f) Llistat de tots els clients*/
                     LeerClientesPosicion();
                     break;
                 case 3:
-                    LeerClientesCodigo();
+                    LeerClientesCodigoRaf();
                     break;
                 case 4:
-                    ModificarClientesCodigoBinario();
+                    ModificarClientes();
                     break;
                 case 5:
-                    BorrarClientesCodigoBinario();
+                    BorrarClientes();
                     break;
                 case 6:
                     LeerClientesBinario();
@@ -253,7 +253,8 @@ f) Llistat de tots els clients*/
     }
 
     /**
-     * Funcio per guardar a un index i el client Index el codi,la posicio d'un client y si esta esborrat
+     * Funcio per guardar a un index i el client Index el codi,la posicio d'un
+     * client y si esta esborrat
      *
      * @param posicio Posicio en bytes abans de grabar el client
      * @param codi Codi del client per guardar al index
@@ -263,10 +264,10 @@ f) Llistat de tots els clients*/
         File f = AbrirFichero(NOM_FTX_CLIENTS_IDXPOS, true);
         DataOutputStream dos = AbrirFicheroEscrituraBinario(NOM_FTX_CLIENTS_IDXPOS, true, true);
         Index i = new Index();
-        
+
         //Guardem la posicio, el codi i si el boolean esta esborrat o no(iniciem a false perque el creem), a la clase client
         i.posicio = posicio;
-        i.codi = codi;        
+        i.codi = codi;
         i.esborrat = false;
 
         //Grabem les dades al fitxer Index
@@ -373,8 +374,22 @@ f) Llistat de tots els clients*/
 
         try {
             i.posicio = dis.readLong();
-            i.codi = dis.readInt();            
+            i.codi = dis.readInt();
             i.esborrat = dis.readBoolean();
+
+        } catch (IOException ex) {
+            i = null;
+        }
+        return i;
+    }
+
+    public static Index LeerDatosIndiceBinario(RandomAccessFile raf) {
+        Index i = new Index();
+
+        try {
+            i.posicio = raf.readLong();
+            i.codi = raf.readInt();
+            i.esborrat = raf.readBoolean();
 
         } catch (IOException ex) {
             i = null;
@@ -409,10 +424,36 @@ f) Llistat de tots els clients*/
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
 
-        Cliente cli = LeerDatosClienteBinario(dis);
-        while (cli != null) {
-            EscribirDatosCliente(cli);
-            cli = LeerDatosClienteBinario(dis);
+        int contador = 1;
+        try {
+            Cliente cli = null;
+
+            do {
+                long posicio_index = (contador - 1) * BYTESLONG;
+
+                RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
+                raf.seek(posicio_index);
+
+                long posicio_dades = raf.readLong();
+                raf.close();
+
+                RandomAccessFile rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "r");
+                rafClient.seek(posicio_dades);
+
+                cli = LeerDatosClienteBinarioRaf(rafClient);
+                if (cli != null) {
+                    EscribirDatosCliente(cli);
+
+                }
+                rafClient.close();
+                contador++;
+
+            } while (cli != null);
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         CerrarFicheroBinarioInput(dis);
@@ -420,7 +461,7 @@ f) Llistat de tots els clients*/
 
     /**
      * Funcio que va llegint els clients, i imprimeix el client de la posicio
-     * demanada. 
+     * demanada.
      */
     public static void LeerClientesPosicion() {
         try {
@@ -470,7 +511,7 @@ f) Llistat de tots els clients*/
         }
 
         if (i != null && i.codi == codiBuscar) {//Cuan el trobi el guardem a la variable posicioBuscar
-            posicioBuscar= i.posicio;
+            posicioBuscar = i.posicio;
         }
         CerrarFicheroBinarioInput(dis);
 
@@ -481,6 +522,40 @@ f) Llistat de tots els clients*/
             Cliente cli = LeerDatosClienteBinarioRaf(rafClient);
             EscribirDatosCliente(cli);
             rafClient.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public static void LeerClientesCodigoRaf() {
+
+        System.out.print("Introdueix el codi del client al que vols accedir: ");
+        int codiBuscar = scan.nextInt();
+        long posicioBuscar = 0;
+
+        try {
+            RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
+
+            Index i = LeerDatosIndiceBinario(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
+            while (i != null && i.codi != codiBuscar) {
+                i = LeerDatosIndiceBinario(raf);
+            }
+
+            if (i != null && i.codi == codiBuscar) {//Cuan el trobi el guardem a la variable posicioBuscar
+                posicioBuscar = i.posicio;
+            }
+            raf.close();
+
+            RandomAccessFile rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "r");
+            rafClient.seek(posicioBuscar);
+
+            Cliente cli = LeerDatosClienteBinarioRaf(rafClient);
+            EscribirDatosCliente(cli);
+            rafClient.close();
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -515,68 +590,48 @@ f) Llistat de tots els clients*/
      * Funcio que demana el codi del client a modificar, el borra i et demana
      * les dades
      */
-    public static void ModificarClientesCodigoBinario() {
+    public static void ModificarClientes() {
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         System.out.print("Introdueix el codi del client a modificar: ");
         int codigoModificar = scan.nextInt();
 
-        // Creamos el enlace con el fichero en el disco para leer
-        DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
+        MarcarBorrado(codigoModificar);
 
-        // Creamos el enlace con el fichero en el disco para escribir
-        DataOutputStream dos = AbrirFicheroEscrituraBinario(COPIA, true, true);
+        GrabarClientesBinario();
 
-        Cliente cli = LeerDatosClienteBinario(dis);
-        while (cli != null) {
-            if (cli.codi == codigoModificar) {//Si el codigo del cliente a modificar es igual
-                System.out.println("Introdueix les noves dades del client");
-                GrabarClientesModificarBinario();
-            }
-            if (cli.codi != codigoModificar) {
-                GrabarDatosClienteBinario(dos, cli, f);//Escribe en el nuevo fichero
-
-            }
-
-            cli = LeerDatosClienteBinario(dis);//Lee lo que hay en el antiguo fichero            
-        }
-
-        //Cerramos los dos ficheros
-        CerrarFicheroBinarioInput(dis);
-        CerrarFicheroBinarioOutput(dos);
-
-        BorrarFichero(NOM_FTX_CLIENTS_BIN);
-        RenombrarFichero(COPIA, NOM_FTX_CLIENTS_BIN);
     }
 
     /**
      * Funcio que borra el client, la funcio busca el client per el seu codi.
      */
-    public static void BorrarClientesCodigoBinario() {
+    public static void BorrarClientes() {
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         System.out.print("Introdueix el codi del client a esborrar: ");
         int codigoBorrar = scan.nextInt();
 
-        // Creamos el enlace con el fichero en el disco para leer
-        DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
+        MarcarBorrado(codigoBorrar);
 
-        // Creamos el enlace con el fichero en el disco para escribir
-        DataOutputStream dos = AbrirFicheroEscrituraBinario(COPIA, true, true);
+    }
 
-        Cliente cli = LeerDatosClienteBinario(dis);
-        while (cli != null) {
+    public static void MarcarBorrado(int codigoBorrar) {
+        try {
+            RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
 
-            if (cli.codi != codigoBorrar) {//Si el codigo a borrar es diferente
-                GrabarDatosClienteBinario(dos, cli, f);//Lo escribe en el nuevo fichero  
+            Index i = LeerDatosIndiceBinario(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
+            while (i != null && i.codi != codigoBorrar) {
+                i = LeerDatosIndiceBinario(raf);
             }
-            cli = LeerDatosClienteBinario(dis);//Lee lo que hay en el antiguo fichero
+
+            if (i != null && i.codi == codigoBorrar) {//Cuan el trobi marquem el i.esborrat com a true
+                i.esborrat = true;
+            }
+            raf.close();
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        //Cerramos los dos ficheros
-        CerrarFicheroBinarioInput(dis);
-        CerrarFicheroBinarioOutput(dos);
-
-        BorrarFichero(NOM_FTX_CLIENTS_BIN);
-        RenombrarFichero(COPIA, NOM_FTX_CLIENTS_BIN);
     }
 
     /**

@@ -1,4 +1,4 @@
-package practica4pruebastomsamu;
+package practica4;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license

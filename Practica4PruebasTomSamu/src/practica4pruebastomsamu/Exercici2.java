@@ -48,6 +48,7 @@ f) Llistat de tots els clients*/
     public static final String COPIA = "./clients_copia.dat";
     public static final String INDEX = "./index.txt";
     public static final String NOM_FTX_CLIENTS_IDXPOS = "./clientes.idx_pos";
+    public static final String NOM_FTX_CLIENTS_IDXCOD = "./clientes.idx_cod";
     public static Scanner scan = new Scanner(System.in);
 
     public static final int BYTESLONG = 8;
@@ -244,14 +245,18 @@ f) Llistat de tots els clients*/
         }
 
     }
-
-    public static void GrabarIndiceClientePosicion(long posicion, int codi) {
+    /**Funcio per guardar a un index el codi y la posicio d'un client
+     * 
+     * @param posicio Posicio en bytes abans de grabar el client
+     * @param codi Codi del client per guardar al index
+     */
+    public static void GrabarIndiceClientePosicion(long posicio, int codi) {
 
         File f = AbrirFichero(NOM_FTX_CLIENTS_IDXPOS, true);
         DataOutputStream dos = AbrirFicheroEscrituraBinario(NOM_FTX_CLIENTS_IDXPOS, true, true);
 
         try {
-            dos.writeLong(posicion);
+            dos.writeLong(posicio);
             dos.writeInt(codi);
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
@@ -388,7 +393,7 @@ f) Llistat de tots els clients*/
 
             //per calcular la posicio on esta el registre al fitxer index, es fa la formula
             //(numeroregistre-1)*tamanydebytesqueocupaelregistre 
-            long posicio_index = (registre - 1) * (BYTESLONG + BYTESINT);
+            long posicio_index = (registre - 1) * BYTESLONG;
 
             RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
             raf.seek(posicio_index);
@@ -408,7 +413,8 @@ f) Llistat de tots els clients*/
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
+    }    
+    
 
     public static void LeerClientesCodigo() {
         try {
@@ -416,13 +422,11 @@ f) Llistat de tots els clients*/
             int contador=1;
             System.out.print("Introdueix el codi del client al que vols accedir: ");
             int codi = scan.nextInt();
-            do {
-                
-                
+            do {             
 
                 //per calcular la posicio on esta el registre al fitxer index, es fa la formula
                 //(numeroregistre-1)*tamanydebytesqueocupaelregistre 
-                long posicio_index = (contador - 1) * (BYTESLONG + BYTESINT);
+                long posicio_index = (contador - 1) * BYTESLONG;
 
                 RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
                 raf.seek(posicio_index);

@@ -372,8 +372,8 @@ f) Llistat de tots els clients*/
         Index i = new Index();
 
         try {
-            i.codi = dis.readInt();
             i.posicio = dis.readLong();
+            i.codi = dis.readInt();            
             i.esborrat = dis.readBoolean();
 
         } catch (IOException ex) {

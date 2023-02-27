@@ -38,7 +38,7 @@ class Index {
 
     int codi;
     long posicio;
-    boolean esborrat;
+    boolean esborra;
 }
 
 public class Exercici2 {
@@ -256,7 +256,7 @@ f) Llistat de tots els clients*/
      * client y si esta esborrat
      *
      * @param posicio Posicio en bytes abans de grabar el client
-     * @param codi Codi del client per guardar al index
+     * @param codi Codi del client per guardar a l'index
      */
     public static void GrabarIndiceClientePosicion(long posicio, int codi) {
 
@@ -268,13 +268,13 @@ f) Llistat de tots els clients*/
         
         i.posicio = posicio;
         i.codi = codi;
-        i.esborrat = false;
+        i.esborra = false;
 
         //Grabem les dades al fitxer Index
         try {            
             dos.writeLong(i.posicio);
             dos.writeInt(i.codi);
-            dos.writeBoolean(i.esborrat);
+            dos.writeBoolean(i.esborra);
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -375,7 +375,7 @@ f) Llistat de tots els clients*/
         try {
             i.posicio = dis.readLong();
             i.codi = dis.readInt();
-            i.esborrat = dis.readBoolean();
+            i.esborra = dis.readBoolean();
 
         } catch (IOException ex) {
             i = null;
@@ -389,7 +389,7 @@ f) Llistat de tots els clients*/
         try {
             i.posicio = raf.readLong();
             i.codi = raf.readInt();
-            i.esborrat = raf.readBoolean();
+            i.esborra = raf.readBoolean();
 
         } catch (IOException ex) {
             i = null;
@@ -642,7 +642,7 @@ f) Llistat de tots els clients*/
             }
 
             if (i != null && i.codi == codigoBorrar) {//Cuan el trobi marquem el i.esborrat com a true
-                i.esborrat = true;
+                i.esborra = true;
             }
             raf.close();
 

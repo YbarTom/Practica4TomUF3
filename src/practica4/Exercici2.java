@@ -430,9 +430,12 @@ f) Llistat de tots els clients*/
         DataInputStream disindex = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_IDXPOS, true);
         Index i = LeerDatosIndiceBinario(disindex);
         
-        while (cli != null && i.esborra == false) {
-            EscribirDatosCliente(cli);
+        while (cli != null && i !=null) {
+            if(i.esborra == false){
+            EscribirDatosCliente(cli);            
+            }
             cli = LeerDatosClienteBinario(dis);
+            i = LeerDatosIndiceBinario(disindex);
         }
 
         CerrarFicheroBinarioInput(dis);
@@ -601,7 +604,7 @@ f) Llistat de tots els clients*/
      */
     public static void MarcarBorrado(int codigoBorrar) {
         try {
-            RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
+            RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "rw");
 
             Index i = LeerDatosIndiceBinarioRaf(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
             while (i != null && i.codi != codigoBorrar) {
@@ -610,6 +613,8 @@ f) Llistat de tots els clients*/
 
             if (i != null && i.codi == codigoBorrar) {//Cuan el trobi marquem el i.esborrat com a true
                 i.esborra = true;
+                raf.seek(raf.getFilePointer()-1);
+                raf.writeBoolean(i.esborra);
             }
             raf.close();
 

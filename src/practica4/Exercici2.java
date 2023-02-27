@@ -36,8 +36,8 @@ class Cliente {
 
 class Index {
 
-    long posicio;
     int codi;
+    long posicio;
     boolean esborrat;
 }
 
@@ -57,9 +57,8 @@ f) Llistat de tots els clients*/
     public static final String NOM_FTX_CLIENTS_IDXPOS = "./clientes.idx_pos";
     public static Scanner scan = new Scanner(System.in);
 
-    public static final int BYTESLONG = 8;
-    public static final int BYTESINT = 4;
-
+    public static final int TAMANY_INDEX = 13;
+  
     /**
      * @param args the command line arguments
      */
@@ -266,12 +265,13 @@ f) Llistat de tots els clients*/
         Index i = new Index();
 
         //Guardem la posicio, el codi i si el boolean esta esborrat o no(iniciem a false perque el creem), a la clase client
+        
         i.posicio = posicio;
         i.codi = codi;
         i.esborrat = false;
 
         //Grabem les dades al fitxer Index
-        try {
+        try {            
             dos.writeLong(i.posicio);
             dos.writeInt(i.codi);
             dos.writeBoolean(i.esborrat);
@@ -420,7 +420,7 @@ f) Llistat de tots els clients*/
     /**
      * Funcio que llegeix tots els clients de l'arxiu binari
      */
-    public static void LeerClientesBinario() {
+    /*public static void LeerClientesBinario() {
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
 
@@ -457,6 +457,18 @@ f) Llistat de tots els clients*/
         }
 
         CerrarFicheroBinarioInput(dis);
+    }*/
+    
+    public static void LeerClientesBinario() {
+        DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
+
+        Cliente cli = LeerDatosClienteBinario(dis);
+        while (cli != null) {
+            EscribirDatosCliente(cli);
+            cli = LeerDatosClienteBinario(dis);
+        }
+
+        CerrarFicheroBinarioInput(dis);
     }
 
     /**
@@ -470,7 +482,7 @@ f) Llistat de tots els clients*/
 
             //per calcular la posicio on esta el registre al fitxer index, es fa la formula
             //(numeroregistre-1)*tamanydebytesqueocupaelregistre 
-            long posicio_index = (registre - 1) * BYTESLONG;
+            long posicio_index = (registre - 1) * TAMANY_INDEX;
 
             RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
             raf.seek(posicio_index);
@@ -529,8 +541,10 @@ f) Llistat de tots els clients*/
         }
 
     }
+
     /**
-     * Funcio que imprimeix el client que indiques, el busca de forma directa amb el fitxer index
+     * Funcio que imprimeix el client que indiques, el busca de forma directa
+     * amb el fitxer index
      */
     public static void LeerClientesCodigoRaf() {
 
@@ -614,9 +628,10 @@ f) Llistat de tots els clients*/
         MarcarBorrado(codigoBorrar);
 
     }
+
     /**
      * Funcio que marca amb true el i.esborrat si es vol borrar
-    */
+     */
     public static void MarcarBorrado(int codigoBorrar) {
         try {
             RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");

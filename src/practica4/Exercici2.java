@@ -52,12 +52,10 @@ d) Modificar un client
 e) Esborrar un client
 f) Llistat de tots els clients*/
     public static final String NOM_FTX_CLIENTS_BIN = "./clients.dat";
-    public static final String COPIA = "./clients_copia.dat";
-    public static final String INDEX = "./index.txt";
+    public static final String COPIA = "./clients_copia.dat";  
     public static final String NOM_FTX_CLIENTS_IDXPOS = "./clientes.idx_pos";
     public static Scanner scan = new Scanner(System.in);
-
-    public static final int TAMANY_INDEX = 13;
+    public static final int TAMANY_INDEX = 13;//8 long+4 int+1 boolean
   
     /**
      * @param args the command line arguments
@@ -363,10 +361,10 @@ f) Llistat de tots els clients*/
     }
 
     /**
-     * Funcio que llegeix les dades del index amb randomAccesFile, ja que el
+     * Funcio que llegeix les dades del index amb DataInputStream, ja que el
      * client es una clase
      *
-     * @param dis RandomAccesFile
+     * @param dis DataInputStream
      * @return retorna la clase index
      */
     public static Index LeerDatosIndiceBinario(DataInputStream dis) {
@@ -383,7 +381,14 @@ f) Llistat de tots els clients*/
         return i;
     }
 
-    public static Index LeerDatosIndiceBinario(RandomAccessFile raf) {
+    /**
+     * Funcio que llegeix les dades del index amb randomAccesFile, ja que el
+     * client es una clase
+     *
+     * @param dis RandomAccesFile
+     * @return retorna la clase index
+     */
+    public static Index LeerDatosIndiceBinarioRaf(RandomAccessFile raf) {
         Index i = new Index();
 
         try {
@@ -416,54 +421,16 @@ f) Llistat de tots els clients*/
         }
         return cli;
     }
-
-    /**
-     * Funcio que llegeix tots els clients de l'arxiu binari
-     */
-    /*public static void LeerClientesBinario() {
-        File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
-        DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
-
-        int contador = 1;
-        try {
-            Cliente cli = null;
-
-            do {
-                long posicio_index = (contador - 1) * BYTESLONG;
-
-                RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
-                raf.seek(posicio_index);
-
-                long posicio_dades = raf.readLong();
-                raf.close();
-
-                RandomAccessFile rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "r");
-                rafClient.seek(posicio_dades);
-
-                cli = LeerDatosClienteBinarioRaf(rafClient);
-                if (cli != null) {
-                    EscribirDatosCliente(cli);
-
-                }
-                rafClient.close();
-                contador++;
-
-            } while (cli != null);
-
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        CerrarFicheroBinarioInput(dis);
-    }*/
+    
     
     public static void LeerClientesBinario() {
         DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
-
         Cliente cli = LeerDatosClienteBinario(dis);
-        while (cli != null) {
+        
+        DataInputStream disindex = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_IDXPOS, true);
+        Index i = LeerDatosIndiceBinario(disindex);
+        
+        while (cli != null && i.esborra == false) {
             EscribirDatosCliente(cli);
             cli = LeerDatosClienteBinario(dis);
         }
@@ -555,9 +522,9 @@ f) Llistat de tots els clients*/
         try {
             RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
 
-            Index i = LeerDatosIndiceBinario(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
+            Index i = LeerDatosIndiceBinarioRaf(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
             while (i != null && i.codi != codiBuscar) {
-                i = LeerDatosIndiceBinario(raf);
+                i = LeerDatosIndiceBinarioRaf(raf);
             }
 
             if (i != null && i.codi == codiBuscar) {//Cuan el trobi el guardem a la variable posicioBuscar
@@ -636,9 +603,9 @@ f) Llistat de tots els clients*/
         try {
             RandomAccessFile raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "r");
 
-            Index i = LeerDatosIndiceBinario(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
+            Index i = LeerDatosIndiceBinarioRaf(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
             while (i != null && i.codi != codigoBorrar) {
-                i = LeerDatosIndiceBinario(raf);
+                i = LeerDatosIndiceBinarioRaf(raf);
             }
 
             if (i != null && i.codi == codigoBorrar) {//Cuan el trobi marquem el i.esborrat com a true

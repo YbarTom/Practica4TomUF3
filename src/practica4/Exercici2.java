@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.text.ParseException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +37,7 @@ class Index {
 
     int codi;
     long posicio;
-    boolean esborra;
+    boolean esborrat;
 }
 
 public class Exercici2 {
@@ -262,38 +261,26 @@ f) Llistat de tots els clients*/
         DataOutputStream dos = AbrirFicheroEscrituraBinario(NOM_FTX_CLIENTS_IDXPOS, true, true);
         Index i = new Index();
 
-        //Guardem la posicio, el codi i si el boolean esta esborrat o no(iniciem a false perque el creem), a la clase client
-        
+        /*Guardem la posicio, el codi i si el boolean esta esborrat o no(iniciem a false perque el creem),
+        a la clase client*/        
         i.posicio = posicio;
         i.codi = codi;
-        i.esborra = false;
+        i.esborrat = false;
 
         //Grabem les dades al fitxer Index
         try {            
             dos.writeLong(i.posicio);
             dos.writeInt(i.codi);
-            dos.writeBoolean(i.esborra);
+            dos.writeBoolean(i.esborrat);
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         CerrarFicheroBinarioOutput(dos);
-    }
-
-    public static void GrabarClientesModificarBinario() {
-        File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
-        DataOutputStream dos = AbrirFicheroEscrituraBinario(NOM_FTX_CLIENTS_BIN, true, true);
-
-        Cliente cli = PedirDatosCliente();
-        GrabarDatosClienteBinario(dos, cli, f);
-
-        CerrarFicheroBinarioOutput(dos);
-        System.out.println("Client donat d'alta correctament");
-
-    }
+    }   
 
     /**
-     * Funcio per a tancar el fitxer amb ek data input
+     * Funcio per a tancar el fitxer amb el data input
      *
      * @param dis dataInputStream
      */
@@ -373,7 +360,7 @@ f) Llistat de tots els clients*/
         try {
             i.posicio = dis.readLong();
             i.codi = dis.readInt();
-            i.esborra = dis.readBoolean();
+            i.esborrat = dis.readBoolean();
 
         } catch (IOException ex) {
             i = null;
@@ -394,7 +381,7 @@ f) Llistat de tots els clients*/
         try {
             i.posicio = raf.readLong();
             i.codi = raf.readInt();
-            i.esborra = raf.readBoolean();
+            i.esborrat = raf.readBoolean();
 
         } catch (IOException ex) {
             i = null;
@@ -431,7 +418,7 @@ f) Llistat de tots els clients*/
         Index i = LeerDatosIndiceBinario(disindex);
         
         while (cli != null && i !=null) {
-            if(i.esborra == false){
+            if(i.esborrat == false){
             EscribirDatosCliente(cli);            
             }
             cli = LeerDatosClienteBinario(dis);
@@ -548,29 +535,7 @@ f) Llistat de tots els clients*/
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
-
-    /**
-     * Funcio que va llegeix els clients,
-     */
-    public static void LeerClientesCodigoBinario() {
-        System.out.print("Introdueix el codi del client a buscar: ");
-        int codigoBuscar = scan.nextInt();
-
-        // Creamos el enlace con el fichero en el disco para leer
-        DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
-
-        Cliente cli = LeerDatosClienteBinario(dis);
-        while (cli != null && cli.codi != codigoBuscar) {//Ira 
-            cli = LeerDatosClienteBinario(dis);
-        }
-
-        if (cli != null && cli.codi == codigoBuscar) {
-            EscribirDatosCliente(cli);
-        }
-
-        CerrarFicheroBinarioInput(dis);
-    }
+    }    
 
     /**
      * Funcio que demana el codi del client a modificar, el borra i et demana
@@ -612,9 +577,9 @@ f) Llistat de tots els clients*/
             }
 
             if (i != null && i.codi == codigoBorrar) {//Cuan el trobi marquem el i.esborrat com a true
-                i.esborra = true;
+                i.esborrat = true;
                 raf.seek(raf.getFilePointer()-1);
-                raf.writeBoolean(i.esborra);
+                raf.writeBoolean(i.esborrat);
             }
             raf.close();
 

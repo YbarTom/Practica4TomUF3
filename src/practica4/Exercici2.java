@@ -42,7 +42,7 @@ class Index {
 
 public class Exercici2 {
 
-    /*Adapta el programa que vas fer a l’exercici 3 per la gestió de clients de forma que
+/*Adapta el programa que vas fer a l’exercici 3 per la gestió de clients de forma que
 faci tot el que es demanava a l’exercici 3, però a més:
 a) Accedeixi de forma directa a un registre segons la seva posició
 b) Accedeixi de forma directa a un registre segons el seu codi
@@ -50,11 +50,11 @@ c) No hagi de reconstruir el fitxer quan s’esborra un registre
 d) No hagi de reconstruir el fitxer quan es modifica un registre
 e) Llisti els clients ordenats per codi*/
     public static final String NOM_FTX_CLIENTS_BIN = "./clients.dat";
-    public static final String COPIA = "./clients_copia.dat";
+    public static final String COPIA = "./clients_copia.dat";  
     public static final String NOM_FTX_CLIENTS_IDXPOS = "./clientes.idx_pos";
     public static Scanner scan = new Scanner(System.in);
     public static final int TAMANY_INDEX = 13;//8 long+4 int+1 boolean
-
+  
     /**
      * @param args the command line arguments
      */
@@ -246,10 +246,10 @@ e) Llisti els clients ordenats per codi*/
         }
 
     }
+    
+    public static void GrabarDatosClienteBinarioRaf(RandomAccessFile rafClient,Cliente cli) {
 
-    public static void GrabarDatosClienteBinarioRaf(RandomAccessFile rafClient, Cliente cli) {
-
-        try {
+        try {            
 
             rafClient.writeInt(cli.codi);
             rafClient.writeUTF(cli.nom);
@@ -263,6 +263,7 @@ e) Llisti els clients ordenats per codi*/
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
+       
 
     }
 
@@ -280,13 +281,13 @@ e) Llisti els clients ordenats per codi*/
         Index i = new Index();
 
         /*Guardem la posicio, el codi i si el boolean esta esborrat o no(iniciem a false perque el creem),
-        a la clase client*/
+        a la clase client*/        
         i.posicio = posicio;
         i.codi = codi;
         i.esborrat = false;
 
         //Grabem les dades al fitxer Index
-        try {
+        try {            
             dos.writeLong(i.posicio);
             dos.writeInt(i.codi);
             dos.writeBoolean(i.esborrat);
@@ -295,7 +296,7 @@ e) Llisti els clients ordenats per codi*/
         }
 
         CerrarFicheroBinarioOutput(dos);
-    }
+    }   
 
     /**
      * Funcio per a tancar el fitxer amb el data input
@@ -426,17 +427,18 @@ e) Llisti els clients ordenats per codi*/
         }
         return cli;
     }
-
+    
+    
     public static void LeerClientesBinario() {
         DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
         Cliente cli = LeerDatosClienteBinario(dis);
-
+        
         DataInputStream disindex = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_IDXPOS, true);
         Index i = LeerDatosIndiceBinario(disindex);
-
-        while (cli != null && i != null) {
-            if (i.esborrat == false) {
-                EscribirDatosCliente(cli);
+        
+        while (cli != null && i !=null) {
+            if(i.esborrat == false){
+            EscribirDatosCliente(cli);            
             }
             cli = LeerDatosClienteBinario(dis);
             i = LeerDatosIndiceBinario(disindex);
@@ -515,12 +517,12 @@ e) Llisti els clients ordenats per codi*/
         }
 
     }
-
-    /**
-     * Funcio que va llegint els clients, i imprimeix el client del codi
-     * demanat.
+    
+    /**    
+     * Funcio que demana el codi del client a modificar, el borra i et demana
+     * les dades     
      */
-    public static void LeerClientesCodigoModificar() {
+    public static void ModificarClientes() {
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         System.out.print("Introdueix el codi del client a modificar: ");
         int codiBuscar = scan.nextInt();
@@ -529,7 +531,7 @@ e) Llisti els clients ordenats per codi*/
         // Creem l'enllaç amb el fitxer del index al disc per llegir
         RandomAccessFile raf = null;
         try {
-            raf = new RandomAccessFile(NOM_FTX_CLIENTS_IDXPOS, "rw");
+            raf = new RandomAccessFile (NOM_FTX_CLIENTS_IDXPOS, "rw");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -537,24 +539,24 @@ e) Llisti els clients ordenats per codi*/
         Index i = LeerDatosIndiceBinarioRaf(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
         while (i != null && i.codi != codiBuscar) {
             i = LeerDatosIndiceBinarioRaf(raf);
-        }
-
-        RandomAccessFile rafClient = null;
+        }       
+        
+        RandomAccessFile rafClient=null;
         try {
             rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "rw");
-            posicioBuscar = rafClient.length();
+            posicioBuscar =rafClient.length();
             rafClient.seek(posicioBuscar);
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         Cliente cli = PedirDatosCliente();
-        i.posicio = posicioBuscar;
+        i.posicio= posicioBuscar;
         i.codi = cli.codi;
         i.esborrat = false;
-
-        //Grabem les dades al fitxer Index
-        try {
+        
+          //Grabem les dades al fitxer Index
+        try {            
             raf.writeLong(i.posicio);
             raf.writeInt(i.codi);
             raf.writeBoolean(i.esborrat);
@@ -562,20 +564,20 @@ e) Llisti els clients ordenats per codi*/
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
         GrabarDatosClienteBinarioRaf(rafClient, cli);
-
+        
         try {
             raf.close();
             rafClient.close();
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }       
     }
 
     /**
-     * Funcio que demana el codi del client a modificar, el borra i et demana
-     * les dades
+     * Funcio que imprimeix el client que indiques, el busca de forma directa
+     * amb el fitxer index
      */
-    public static void ModificarClientes() {
+    public static void LeerClientesCodigoRaf() {
 
         System.out.print("Introdueix el codi del client al que vols accedir: ");
         int codiBuscar = scan.nextInt();
@@ -607,7 +609,8 @@ e) Llisti els clients ordenats per codi*/
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
+    }   
+    
 
     /**
      * Funcio que borra el client, la funcio busca el client per el seu codi.
@@ -636,7 +639,7 @@ e) Llisti els clients ordenats per codi*/
 
             if (i != null && i.codi == codigoBorrar) {//Cuan el trobi marquem el i.esborrat com a true
                 i.esborrat = true;
-                raf.seek(raf.getFilePointer() - 1);
+                raf.seek(raf.getFilePointer()-1);
                 raf.writeBoolean(i.esborrat);
             }
             raf.close();

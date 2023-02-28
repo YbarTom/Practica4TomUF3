@@ -42,14 +42,13 @@ class Index {
 
 public class Exercici2 {
 
-    /*Fes un programa que permeti gestionar el fitxer de clients amb les següents
-operacions:
-a) Alta d’un client (registrar un client que no existia abans al fitxer)
-b) Consulta d’un client per posició
-c) Consulta d’un client per codi
-d) Modificar un client
-e) Esborrar un client
-f) Llistat de tots els clients*/
+/*Adapta el programa que vas fer a l’exercici 3 per la gestió de clients de forma que
+faci tot el que es demanava a l’exercici 3, però a més:
+a) Accedeixi de forma directa a un registre segons la seva posició
+b) Accedeixi de forma directa a un registre segons el seu codi
+c) No hagi de reconstruir el fitxer quan s’esborra un registre
+d) No hagi de reconstruir el fitxer quan es modifica un registre
+e) Llisti els clients ordenats per codi*/
     public static final String NOM_FTX_CLIENTS_BIN = "./clients.dat";
     public static final String COPIA = "./clients_copia.dat";  
     public static final String NOM_FTX_CLIENTS_IDXPOS = "./clientes.idx_pos";
@@ -248,7 +247,7 @@ f) Llistat de tots els clients*/
 
     }
     
-    public static void GrabarDatosClienteBinarioRaf(RandomAccessFile rafClient,Cliente cli, File f) {
+    public static void GrabarDatosClienteBinarioRaf(RandomAccessFile rafClient,Cliente cli) {
 
         try {            
 
@@ -392,7 +391,7 @@ f) Llistat de tots els clients*/
      * Funcio que llegeix les dades del index amb randomAccesFile, ja que el
      * client es una clase
      *
-     * @param dis RandomAccesFile
+     * @param raf RandomAccesFile
      * @return retorna la clase index
      */
     public static Index LeerDatosIndiceBinarioRaf(RandomAccessFile raf) {
@@ -525,7 +524,7 @@ f) Llistat de tots els clients*/
      */
     public static void LeerClientesCodigoModificar() {
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
-        System.out.print("Introdueix el codi del client: ");
+        System.out.print("Introdueix el codi del client a modificar: ");
         int codiBuscar = scan.nextInt();
         long posicioBuscar = 0;
 
@@ -564,10 +563,14 @@ f) Llistat de tots els clients*/
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
-        GrabarDatosClienteBinarioRaf(rafClient, cli, f);
+        GrabarDatosClienteBinarioRaf(rafClient, cli);
         
-       
-        
+        try {
+            raf.close();
+            rafClient.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        }       
     }
 
     /**

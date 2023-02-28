@@ -247,6 +247,26 @@ f) Llistat de tots els clients*/
         }
 
     }
+    
+    public static void GrabarDatosClienteBinarioRaf(RandomAccessFile rafClient,Cliente cli, File f) {
+
+        try {            
+
+            rafClient.writeInt(cli.codi);
+            rafClient.writeUTF(cli.nom);
+            rafClient.writeUTF(cli.cognoms);
+            rafClient.writeInt(cli.DiaNaixement);
+            rafClient.writeInt(cli.MesNaixement);
+            rafClient.writeInt(cli.AnyNaixement);
+            rafClient.writeUTF(cli.AdrecaPostal);
+            rafClient.writeUTF(cli.mail);
+            rafClient.writeBoolean(cli.VIP);
+        } catch (IOException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+
+    }
 
     /**
      * Funcio per guardar a un index i el client Index el codi,la posicio d'un
@@ -467,7 +487,7 @@ f) Llistat de tots els clients*/
      */
     public static void LeerClientesCodigo() {
 
-        System.out.print("Introdueix el codi del client al que vols accedir: ");
+        System.out.print("Introdueix el codi del client: ");
         int codiBuscar = scan.nextInt();
         long posicioBuscar = 0;
 
@@ -497,6 +517,57 @@ f) Llistat de tots els clients*/
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    
+    /**
+     * Funcio que va llegint els clients, i imprimeix el client del codi
+     * demanat.
+     */
+    public static void LeerClientesCodigoModificar() {
+        File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
+        System.out.print("Introdueix el codi del client: ");
+        int codiBuscar = scan.nextInt();
+        long posicioBuscar = 0;
+
+        // Creem l'enllaç amb el fitxer del index al disc per llegir
+        RandomAccessFile raf = null;
+        try {
+            raf = new RandomAccessFile (NOM_FTX_CLIENTS_IDXPOS, "rw");
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Index i = LeerDatosIndiceBinarioRaf(raf);//Anem llegint la clase Index fins que trobi el codi a buscar
+        while (i != null && i.codi != codiBuscar) {
+            i = LeerDatosIndiceBinarioRaf(raf);
+        }       
+        
+        RandomAccessFile rafClient=null;
+        try {
+            rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "rw");
+            posicioBuscar =rafClient.length();
+            rafClient.seek(posicioBuscar);
+        } catch (IOException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        Cliente cli = PedirDatosCliente();
+        i.posicio= posicioBuscar;
+        i.codi = cli.codi;
+        i.esborrat = false;
+        
+          //Grabem les dades al fitxer Index
+        try {            
+            raf.writeLong(i.posicio);
+            raf.writeInt(i.codi);
+            raf.writeBoolean(i.esborrat);
+        } catch (IOException ex) {
+            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        GrabarDatosClienteBinarioRaf(rafClient, cli, f);
+        
+       
+        
     }
 
     /**
@@ -545,8 +616,7 @@ f) Llistat de tots els clients*/
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         System.out.print("Introdueix el codi del client a modificar: ");
         int codigoModificar = scan.nextInt();
-
-        MarcarBorrado(codigoModificar);
+       
 
         GrabarClientesBinario();
 
@@ -560,6 +630,7 @@ f) Llistat de tots els clients*/
         System.out.print("Introdueix el codi del client a esborrar: ");
         int codigoBorrar = scan.nextInt();
 
+        LeerClientesCodigo();
         MarcarBorrado(codigoBorrar);
 
     }

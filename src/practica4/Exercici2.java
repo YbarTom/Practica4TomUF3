@@ -479,44 +479,7 @@ e) Llisti els clients ordenats per codi*/
         }
 
     }
-
-    /**
-     * Funcio que va llegint els clients, i imprimeix el client del codi
-     * demanat.
-     */
-    public static void LeerClientesCodigo() {
-
-        System.out.print("Introdueix el codi del client: ");
-        int codiBuscar = scan.nextInt();
-        long posicioBuscar = 0;
-
-        // Creem l'enllaç amb el fitxer del index al disc per llegir
-        DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_IDXPOS, true);
-
-        Index i = LeerDatosIndiceBinario(dis);//Anem llegint la clase Index fins que trobi el codi a buscar
-        while (i != null && i.codi != codiBuscar) {
-            i = LeerDatosIndiceBinario(dis);
-        }
-
-        if (i != null && i.codi == codiBuscar) {//Cuan el trobi el guardem a la variable posicioBuscar
-            posicioBuscar = i.posicio;
-        }
-        CerrarFicheroBinarioInput(dis);
-
-        try {
-            RandomAccessFile rafClient = new RandomAccessFile(NOM_FTX_CLIENTS_BIN, "r");
-            rafClient.seek(posicioBuscar);
-
-            Cliente cli = LeerDatosClienteBinarioRaf(rafClient);
-            EscribirDatosCliente(cli);
-            rafClient.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
+    
     
     /**    
      * Funcio que demana el codi del client a modificar, el borra i et demana
@@ -618,15 +581,15 @@ e) Llisti els clients ordenats per codi*/
     public static void BorrarClientes() {
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         System.out.print("Introdueix el codi del client a esborrar: ");
-        int codigoBorrar = scan.nextInt();
-
-        LeerClientesCodigo();
+        int codigoBorrar = scan.nextInt();        
+        
         MarcarBorrado(codigoBorrar);
 
     }
 
     /**
      * Funcio que marca amb true el i.esborrat si es vol borrar
+     * @param codigoBorrar codi del client a esborrar
      */
     public static void MarcarBorrado(int codigoBorrar) {
         try {

@@ -142,7 +142,13 @@ e) Llisti els clients ordenats per codi*/
 
         return result;
     }
-
+    
+    /**
+     * Funcio que obre un binari fitxer per lectura
+     * @param nomFichero nom del fitxer a obrir
+     * @param crear true per si no existeix crearlo o false per no crearlo
+     * @return el fitxer per lectura
+     */
     public static DataInputStream AbrirFicheroLecturaBinario(String nomFichero, boolean crear) {
         DataInputStream dis = null;
         File f = AbrirFichero(nomFichero, crear);
@@ -162,6 +168,16 @@ e) Llisti els clients ordenats per codi*/
         return dis;
     }
 
+    /**
+     * Funcio que obre un binari fitxer per escritura
+     *
+     * @param nomFichero nom del fitxer a obrir
+     * @param crear true per si no existeix crearlo o false per no crearlo
+     * @param blnAnyadir true per continuar escribint o s'havia acabat o false
+     * per esborrar contingut i escriure de nou.
+     * @return el fitxer per escritura
+     */
+    
     public static DataOutputStream AbrirFicheroEscrituraBinario(String nomFichero, boolean crear, boolean blnAnyadir) {
         DataOutputStream dos = null;
         File f = AbrirFichero(nomFichero, crear);
@@ -214,7 +230,10 @@ e) Llisti els clients ordenats per codi*/
         }
         return c;
     }
-
+    
+    /**
+     * Procediment per grabar dades en un fitxer binari con una clase cliente
+     */
     public static void GrabarClientesBinario() {
         File f = AbrirFichero(NOM_FTX_CLIENTS_BIN, true);
         DataOutputStream dos = AbrirFicheroEscrituraBinario(NOM_FTX_CLIENTS_BIN, true, true);
@@ -247,6 +266,11 @@ e) Llisti els clients ordenats per codi*/
 
     }
     
+    /**
+     * Procediment per grabar dades en la clase client
+     * @param rafClient el fitxer obert per escriure amb randomacessfile
+     * @param cli el client on es guardaran les dades
+     */    
     public static void GrabarDatosClienteBinarioRaf(RandomAccessFile rafClient,Cliente cli) {
 
         try {            
@@ -262,8 +286,7 @@ e) Llisti els clients ordenats per codi*/
             rafClient.writeBoolean(cli.VIP);
         } catch (IOException ex) {
             Logger.getLogger(Exercici2.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       
+        }      
 
     }
 
@@ -327,6 +350,10 @@ e) Llisti els clients ordenats per codi*/
 
     }
 
+    /**
+     * Procediment per imprimir les dades de la clase client
+     * @param client la clase client
+     */
     public static void EscribirDatosCliente(Cliente client) {
         System.out.println("Codi: " + client.codi);
         System.out.println("Nom: " + client.nom);
@@ -408,6 +435,13 @@ e) Llisti els clients ordenats per codi*/
         return i;
     }
 
+    
+     /**
+     * Funcio que llegeix les dades del client, ja que el client es una clase
+     *
+     * @param dis DataInputStream el fitxer obert per lectura
+     * @return retorna el client
+     */
     public static Cliente LeerDatosClienteBinario(DataInputStream dis) {
         Cliente cli = new Cliente();
 
@@ -429,6 +463,9 @@ e) Llisti els clients ordenats per codi*/
     }
     
     
+    /**
+     * Procediment que llegeix tots els clients de l'arxiu binari
+     */
     public static void LeerClientesBinario() {
         DataInputStream dis = AbrirFicheroLecturaBinario(NOM_FTX_CLIENTS_BIN, true);
         Cliente cli = LeerDatosClienteBinario(dis);
